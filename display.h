@@ -1,7 +1,15 @@
-#include "graphic.h"
-#include "util.h"
-
+#include <fcntl.h>
+#include <linux/i2c-dev.h>
+#include <math.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <time.h>
+#include <unistd.h>
+
+#include "util.h"
 
 #ifndef DISPLAY_H
 #define DISPLAY_H

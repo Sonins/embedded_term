@@ -1,24 +1,33 @@
-CC = gcc
+BUILDROOT_OUTPUT=$(HOME)/buildroot/output
+CROSS_COMPILE=$(BUILDROOT_OUTPUT)/host/bin/arm-linux-
+
+CC = $(CROSS_COMPILE)gcc
 TARGET = arrow_game
+OBJECTS = game_main.o gpio.o display.o game.o arrow.o bow.o character.o draw.o util.o
+CFLAGS = -Wall
 
-$(TARGET) : arrow.o bow.o character.o display.o game.o util.o
-	$(CC) -c -o $(TARGET) arrow.o bow.o character.o display.o game.o util.o
+all: $(TARGET)
 
-arrow.o : arrow.c util.o
-	$(CC) -c -o arrow.o arrow.c
+$(TARGET): $(OBJECTS)
+	$(CC) -o $(TARGET) $(OBJECTS) -lm
 
-bow.o : bow.c util.o
-	$(CC) -c -o bow.o bow.c
+%.o: %.c
+	$(CC) -c $< $(CFLAGS)
 
-character.o : character.c
-	$(CC) -c -o character.o character.c
+game_main.o : game_main.c game.o
+	$(CC) -c game_main.c $(CFLAGS)
 
-display.o : display.c util.o
-	$(CC) -c -o display.o display.c
+draw.o: draw.c graphic.o
+	$(CC) -c draw.c $(CFLAGS)
 
-game.o : game.c
-	$(CC) -c -o game.o game.c
+game.o: game.c arrow.o bow.o character.o draw.o
+	$(CC) -c game.c $(CFLAGS)
 
-util.o : util.c
-	$(CC) -c -o util.o util.c
+display.o: display.c display.h 
+	$(CC) -c display.c $(CFLAGS)
 
+util.o: util.c util.h
+	$(CC) -c util.c $(CFLAGS)
+
+clean:
+	rm *.o $(TARGET)

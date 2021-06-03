@@ -1,4 +1,4 @@
-#include "arrow-game.h"
+#include "game.h"
 
 struct point get_neck_pos(struct character *ch) {
     struct point result;

@@ -1,15 +1,5 @@
 #include "display.h"
 #include "util.h"
-
-#include <fcntl.h>
-#include <linux/i2c-dev.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/ioctl.h>
-#include <time.h>
-#include <unistd.h>
-
 #include "HUNTER_font.h"
 
 // basic i/o with display

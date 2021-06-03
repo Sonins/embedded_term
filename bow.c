@@ -1,4 +1,4 @@
-#include "arrow-game.h"
+#include "game.h"
 
 void rotate_bow_up(struct bow *b) {
     if (b->angle < BOW_MAX_ANGLE) {
@@ -18,4 +18,12 @@ void init_bow(struct bow *b, struct point center_pos) {
     b->tense = false;
     b->pos.x = center_pos.x - BOW_POS_CENTER_OFFSET_X;
     b->pos.y = center_pos.y - BOW_POS_CENTER_OFFSET_Y;
+}
+
+bool is_tense(struct bow *b) {
+    return b->tense == true;
+}
+
+bool is_release(struct bow *b) {
+    return b->tense == false;
 }

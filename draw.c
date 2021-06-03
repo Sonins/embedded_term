@@ -1,4 +1,7 @@
-#include "arrow-game.h"
+#include "game.h"
+
+extern const unsigned char bow_release[];
+extern const unsigned char bow_tense[];
 
 double to_map_y_axis(double y) { return MAP_HEIGHT - y; }
 

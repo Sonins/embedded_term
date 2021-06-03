@@ -1,9 +1,5 @@
-#include "arrow-game.h"
-
-#include "arrow.c"
-#include "bow.c"
-#include "character.c"
-#include "draw.c"
+#include "game.h"
+#include "graphic.c"
 
 struct game *initialze_game() {
     i2c_fd = ssd1306_init();
