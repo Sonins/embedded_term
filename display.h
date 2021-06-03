@@ -32,12 +32,10 @@ struct display_range {
     int col[2];
 };
 
-void ssd1306_init();
+int ssd1306_init();
 
-void update_full(uint8_t* data);
+void update_full(int i2c_fd, uint8_t* data);
 
-void ssd1306_destroy();
-
-struct display_range cursor_to_range(struct point cursor);
+void ssd1306_destroy(int i2c_fd);
 
 #endif

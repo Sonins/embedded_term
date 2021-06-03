@@ -60,7 +60,7 @@ int ssd1306_init() {
 
     ssd1306_command(i2c_fd, 0xAF);  // display on
 
-    return i2c_fd
+    return i2c_fd;
 }
 
 void ssd1306_data(int i2c_fd, const u_int8_t* data, size_t size) {
@@ -114,34 +114,7 @@ void ssd1306_destroy(int i2c_fd) {
 
 
 // util function.
-
-struct display_range cursor_to_range(struct point *cursor) {
-    struct display_range range;
-
-    if (cursor->x < S_WIDTH / 2) {
-        range.col[0] = 0;
-        range.col[1] = S_WIDTH;
-    } else if (S_WIDTH / 2 <= cursor->x && cursor->x < MAP_WIDTH - S_WIDTH / 2) {
-        range.col[0] = cursor->x - S_WIDTH / 2;
-        range.col[1] = cursor->x + S_WIDTH / 2;
-    } else {
-        range.col[0] = MAP_WIDTH - S_WIDTH;
-        range.col[1] = MAP_WIDTH;
-    }
-
-    if (cursor->y < S_HEIGHT / 2) {
-        range.row[0] = 0;
-        range.row[1] = S_HEIGHT;
-    } else if (S_HEIGHT / 2 <= cursor->y && cursor->y < MAP_HEIGHT - S_HEIGHT / 2) {
-        range.row[0] = cursor->y - S_HEIGHT / 2;
-        range.row[1] = cursor->y + S_HEIGHT / 2;
-    } else {
-        range.row[0] = MAP_HEIGHT - S_HEIGHT;
-        range.row[1] = MAP_HEIGHT;
-    }
-
-    return range;
-}
+int to_1dim(int x, int y) { return (y / 8) * S_WIDTH + x; }
 
 void write_str(u_int8_t *dis, const char *str, int x, int y) {
     for (int i = 0; i < strlen(str); i++) {
@@ -152,4 +125,3 @@ void write_str(u_int8_t *dis, const char *str, int x, int y) {
     }
 }
 
-int to_1dim(int x, int y) { return (y / 8) * S_WIDTH + x; }

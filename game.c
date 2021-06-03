@@ -14,9 +14,10 @@ struct game *initialze_game() {
 
     init_character(&g->player, PLAYER_INIT_POSX, PLAYER_INIT_POSY);
     init_character(&g->enemy, ENEMY_INIT_POSX, ENEMY_INIT_POSY);
-    init_bow(&g->player_bow, get_neck_pos(g->player));
+    init_bow(&g->player_bow, get_neck_pos(&g->player));
 
-    g->display_cursor = {0, MAP_HEIGHT};
+    g->display_cursor.x = 0;
+    g->display_cursor.y = MAP_HEIGHT;
     g->score = 0;
 
     memset(g->entire_map, 0, sizeof(g->entire_map));
@@ -25,8 +26,8 @@ struct game *initialze_game() {
 }
 
 void destroy_game(struct game *g) {
-    ssd1306_destroy();
-    gpio_close();
+    ssd1306_destroy(i2c_fd);
+    gpio_close(gpio_fd);
     free(g);
 }
 
@@ -58,5 +59,5 @@ void run_game(struct game *g) {
             data[y * S_WIDTH + x] = g->entire_map[y + 64][x];
         }
     }
-    update_full(data);
+    update_full(i2c_fd, data);
 }

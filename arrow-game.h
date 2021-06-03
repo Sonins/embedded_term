@@ -91,19 +91,15 @@ int gpio_fd;
 // arrow.c proto
 void arrow_precede(struct arrow *__arrow);
 
-void arrow_set_initialize(struct arrow_set *set);
-
-void arrow_set_add(struct arrow *__arrow);
-
-
 // bow.c proto
 void rotate_bow_up(struct bow *b);
 
 void rotate_bow_down(struct bow *b);
 
-void init_bow(struct bow *b, struct point center_pos)
+void init_bow(struct bow *b, struct point center_pos);
 
 bool is_tense(struct bow *b);
+
 bool is_release(struct bow *b);
 
 // character.c proto
@@ -128,4 +124,9 @@ void game_run(struct game *);
 struct game *initialze_game();
 
 void destroy_game(struct game *g);
+
+void draw_to_map(struct game *g);
+
+struct display_range cursor_to_range(struct point *cursor);
+
 #endif

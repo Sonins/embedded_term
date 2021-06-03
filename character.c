@@ -14,7 +14,7 @@ void init_character(struct character *_character, int posx, int posy) {
     _character->pos.x = posx;
     _character->pos.y = posy;
 
-    struct point neck_pos = get_neck_pos(&_character);
+    struct point neck_pos = get_neck_pos(_character);
 
     _character->body_box.lower_x = _character->pos.x - CHARACTER_WIDTH / 2;
     _character->body_box.lower_y = 0;
