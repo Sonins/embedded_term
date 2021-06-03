@@ -50,3 +50,13 @@ void draw_to_map(struct game *g) {
     drawover_stuff(g->entire_map, bow_rotation, 2 * max_radius,
                    2*max_radius, &bow_draw_pos);
 }
+
+void run_game(struct game *g) {
+    uint8_t data[S_WIDTH * S_PAGES];
+    for (int y = 0; y < S_PAGES; y++) {
+        for (int x = 0; x < S_WIDTH; x++) {
+            data[y * S_WIDTH + x] = g->entire_map[y + 64][x];
+        }
+    }
+    update_full(data);
+}
