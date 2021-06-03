@@ -9,6 +9,7 @@
 #include <linux/slab.h>
 #include <linux/smp.h>
 #include <linux/uaccess.h>
+#include <linux/types.h>
 #include <asm/io.h>
 
 MODULE_LICENSE("GPL");
@@ -21,12 +22,12 @@ void* gpio_ctr = NULL;
 void set_gpio_input(void* gpio_ctr, int gpio_nr) {
     int reg_id = gpio_nr / 10;
     int pos = gpio_nr % 10;
+    
+    u_int32_t* fsel_reg = (u_int32_t*)(gpio_ctr + 0x4 * reg_id);
 
-    uint32_t* fsel_reg = (uint32_t*)(gpio_ctr + 0x4 * reg_id);
+    u_int32_t fsel_val = *fsel_reg;
 
-    uint32_t fsel_val = *fsel_reg;
-
-    uint32_t mask = 0x7 << (pos * 3);
+    u_int32_t mask = 0x7 << (pos * 3);
     fsel_val = fsel_val & ~mask;
 
     *fsel_reg = fsel_val;
@@ -38,9 +39,9 @@ void get_gpio_input_value(void* gpio_ctr, int gpio_nr, int* value) {
     int reg_id = gpio_nr / 32;
     int pos = gpio_nr % 32;
 
-    uint32_t* level_reg =
-        (uint32_t*)(gpio_ctr + GPIO_LEV_OFFSET + 0x4 * reg_id);
-    uint32_t level = *level_reg & (0x1 << pos);
+    u_int32_t* level_reg =
+        (u_int32_t*)(gpio_ctr + GPIO_LEV_OFFSET + 0x4 * reg_id);
+    u_int32_t level = *level_reg & (0x1 << pos);
 
     *value = level ? 1 : 0;
 }
@@ -53,8 +54,8 @@ void set_gpio_pullup(void *gpio_ctr, int gpio_nr) {
     int reg_id = gpio_nr / 32;
     int pos = gpio_nr % 32;
 
-    uint32_t* pud_reg = (uint32_t*) (gpio_ctr + GPIO_PUD_OFFSET);
-    uint32_t* pudclk_reg = (uint32_t*) (gpio_ctr + GPIO_PUDCLK_OFFSET + 0x4 * reg_id);
+    u_int32_t* pud_reg = (u_int32_t*) (gpio_ctr + GPIO_PUD_OFFSET);
+    u_int32_t* pudclk_reg = (u_int32_t*) (gpio_ctr + GPIO_PUDCLK_OFFSET + 0x4 * reg_id);
 
     *pud_reg = GPIO_PUD_PULLUP;
     udelay(1);
@@ -71,12 +72,6 @@ void set_gpio_pullup(void *gpio_ctr, int gpio_nr) {
 static int majornumber;
 static struct class* cRpiKeyClass = NULL;
 static struct device* cRpiKeyDevice = NULL;
-
-struct file_operations gpio_fops = {
-    .unlocked_ioctl = device_ioctl,
-    .open = device_open,
-    .release = device_release,
-};
 
 static int device_open(struct inode *inode, struct file *file) {
     printk(KERN_INFO "rpi_key device_open(%p)\n", file);
@@ -96,11 +91,17 @@ long device_ioctl(struct file *file, unsigned int ioctl_num, unsigned long ioctl
         get_gpio_input_value(gpio_ctr, 27, &param_value[1]);
         get_gpio_input_value(gpio_ctr, 22, &param_value[2]);
 
-        copy_to_user((void*) ioctl_param, (void*) param_value, sizeof(uint32_t) * 2);
+        copy_to_user((void*) ioctl_param, (void*) param_value, sizeof(u_int32_t) * 2);
 
     }
     return 0;
 }
+
+struct file_operations gpio_fops = {
+    .unlocked_ioctl = device_ioctl,
+    .open = device_open,
+    .release = device_release,
+};
 
 static int __init rpi_key_init(void) {
     majornumber = register_chrdev(MAJOR_NUM, DEVICE_NAME, &gpio_fops);
