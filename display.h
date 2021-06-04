@@ -35,12 +35,18 @@
         exit(1);                                            \
     }
 
+struct display_range {
+    int col[2];
+    int row[2];
+};
+
 int ssd1306_init();
 
 void update_full(int i2c_fd, uint8_t* data);
 
 void ssd1306_destroy(int i2c_fd);
 
-void update_range_map(int i2c_fd, uint8_t* data, struct box range, int data_width, struct point *display_cursor);
+void update_range_map(int i2c_fd, uint8_t* data, struct display_range range,
+                      int data_width, struct point* display_cursor);
 
 #endif

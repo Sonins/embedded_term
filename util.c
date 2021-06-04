@@ -5,8 +5,8 @@
 struct point rotate(struct point *pos, struct point *center, double angle) {
     angle = to_radian(angle);
 
-    double rotate_transform[2][2] = {{cos(angle), -1 * sin(angle)},
-                                     {sin(angle), cos(angle)}};
+    double rotate_transform[2][2] = {{cos(angle), sin(angle)},
+                                     {-1 * sin(angle), cos(angle)}};
 
     struct point vec = {pos->x - center->x, pos->y - center->y};
 

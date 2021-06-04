@@ -39,13 +39,16 @@ void draw_player(struct game *g) {
         .lower_y = 0};
 
     int width = update_box.upper_x - update_box.lower_x;
-    int height = update_box.upper_y = update_box.lower_y;
+    int height = update_box.upper_y - update_box.lower_y;
     
     unsigned char *clear_mask;
     MALLOC(clear_mask, sizeof(unsigned char *) * width * height);
     memset(clear_mask, 0, sizeof(unsigned char *) * width * height);
 
-    draw_stuff(g->entire_map, clear_mask, width, height, &update_pos);
+    struct point update_pos = {.x = update_box.lower_x,
+                               .y = update_box.upper_y};
+
+    draw_stuff(g->entire_map, clear_mask, width, height / 8, &update_pos);
 
     free(clear_mask);
 
@@ -76,11 +79,7 @@ void display_map(struct game *g) {
                 g->entire_map[y + (MAP_HEIGHT_PAGES - S_PAGES)][x];
         }
     }
-
-    for (int i = 0; i < S_WIDTH; i++) {
-        data[S_WIDTH + i] = 1;
-    }
     update_full(i2c_fd, data);
 }
 
-void run_game(struct game *g) { aim_phase(); }
+void run_game(struct game *g) { aim_phase(g); }

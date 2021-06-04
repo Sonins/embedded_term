@@ -43,7 +43,7 @@ void get_gpio_input_value(void* gpio_ctr, int gpio_nr, int* value) {
         (u_int32_t*)(gpio_ctr + GPIO_LEV_OFFSET + 0x4 * reg_id);
     u_int32_t level = *level_reg & (0x1 << pos);
 
-    *value = level ? 1 : 0;
+    *value = level ? 0 : 1;
 }
 
 void set_gpio_pullup(void *gpio_ctr, int gpio_nr) {
@@ -91,7 +91,7 @@ long device_ioctl(struct file *file, unsigned int ioctl_num, unsigned long ioctl
         get_gpio_input_value(gpio_ctr, 27, &param_value[1]);
         get_gpio_input_value(gpio_ctr, 22, &param_value[2]);
 
-        copy_to_user((void*) ioctl_param, (void*) param_value, sizeof(u_int32_t) * 2);
+        copy_to_user((void*) ioctl_param, (void*) param_value, sizeof(u_int32_t) * 3);
 
     }
     return 0;

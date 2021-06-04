@@ -2,7 +2,7 @@
 
 struct point get_neck_pos(struct character *ch) {
     struct point result;
-    const int neck_offset_x = CHARACTER_WIDTH / 2;
+    const int neck_offset_x = CHARACTER_WIDTH / 2 + 2;
     const int neck_offset_y = 18;
     result.x = ch->pos.x + neck_offset_x;
     result.y = ch->pos.y + neck_offset_y;

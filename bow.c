@@ -23,8 +23,8 @@ void init_bow(struct bow *b, struct point center_pos) {
                         ? BOW_WIDTH - BOW_POS_CENTER_OFFSET_X
                         : BOW_HEIGHT - BOW_POS_CENTER_OFFSET_Y;
 
-    b->draw_pos.x = g->player_bow.center_pos.x - g->player_bow.max_radius;
-    b->draw_pos.y = g->player_bow.center_pos.y - g->player_bow.max_radius;
+    b->draw_pos.x = b->center_pos.x - b->max_radius;
+    b->draw_pos.y = b->center_pos.y - b->max_radius;
 }
 
 bool is_tense(struct bow *b) { return b->tense == true; }

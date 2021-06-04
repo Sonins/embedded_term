@@ -1,6 +1,7 @@
 #include "display.h"
-#include "util.h"
+
 #include "HUNTER_font.h"
+#include "util.h"
 
 // basic i/o with display
 void ssd1306_command(int i2c_fd, u_int8_t cmd) {
@@ -79,29 +80,41 @@ void update_full(int i2c_fd, u_int8_t* data) {
     ssd1306_data(i2c_fd, data, S_WIDTH * S_PAGES);
 }
 
-void update_range_map(int i2c_fd, uint8_t* data, struct box range, int data_width, struct point *display_cursor) {
+void update_range_map(int i2c_fd, uint8_t* data, struct display_range range,
+                      int data_width, struct point* display_cursor) {
     ssd1306_command(i2c_fd, 0x20);  // addressing mode
     ssd1306_command(i2c_fd, 0x0);   // horizontal addressing mode
 
+    int col_start = range.col[0] - display_cursor->x;
+    int col_end = range.col[1] - display_cursor->x;
+
+    int page_start = (int)ceil((display_cursor->y - range.row[1]) / 8);
+    if (page_start < 0) page_start = 0;
+
+    int page_end = (display_cursor->y - range.row[0]) / 8;
+
     ssd1306_command(i2c_fd, 0x21);  // set column start/end address
-    ssd1306_command(i2c_fd, range.col[0] - display_cursor->x);
-    ssd1306_command(i2c_fd, range.col[1] - display_cursor->x - 1);
+    ssd1306_command(i2c_fd, col_start);
+    ssd1306_command(i2c_fd, col_end - 1);
 
     ssd1306_command(i2c_fd, 0x22);  // set page start/end address
-    ssd1306_command(i2c_fd, (range.row[0] - display_cursor->y) / 8);
-    ssd1306_command(i2c_fd, (int) ceil((range.row[1] - display_cursor->y)  / 8));
+    ssd1306_command(i2c_fd, page_start);
+    ssd1306_command(i2c_fd, page_end);
 
     int width = range.col[1] - range.col[0];
-    int height = (int) ceil((double) range.row[1] / 8) - (range.row[0] / 8);
+    int height = (int)ceil((double)range.row[1] / 8) - (range.row[0] / 8);
 
-    uint8_t *update_data;
-    MALLOC(update_data, sizeof(uint8_t) (width * height));
+    uint8_t* update_data;
+    MALLOC(update_data, sizeof(uint8_t) * (width * height));
 
-    for (int i = range.row[0]; i < range.row[1]; i++) {
-        for (int j = range.col[0]; j < range.col[1]; j++) {
-            int update_y = i - range.row[0];
-            int update_x = j - range.col[0];
-            update_data[update_y * width + update_x] = data[i * data_width + j];
+    for (int i = page_start; i < page_end; i++) {
+        for (int j = col_start; j < col_end; j++) {
+            int update_y = i - page_start;
+            int update_x = j - col_start;
+            int data_y = i + display_cursor->y;
+            int data_x = j + display_cursor->x;
+            update_data[update_y * width + update_x] =
+                data[data_y * data_width + data_x];
         }
     }
 
@@ -110,15 +123,14 @@ void update_range_map(int i2c_fd, uint8_t* data, struct box range, int data_widt
 }
 
 void ssd1306_destroy(int i2c_fd) {
-    //ssd1306_command(i2c_fd, 0xAE); // oled off
+    // ssd1306_command(i2c_fd, 0xAE); // oled off
     close(i2c_fd);
 }
-
 
 // util function.
 int to_1dim(int x, int y) { return (y / 8) * S_WIDTH + x; }
 
-void write_str(u_int8_t *dis, const char *str, int x, int y) {
+void write_str(u_int8_t* dis, const char* str, int x, int y) {
     for (int i = 0; i < strlen(str); i++) {
         for (int j = 0; j < FONT_WIDTH; j++) {
             dis[to_1dim(x++, y * 8)] = font[str[i] - ' '][j];
@@ -126,4 +138,3 @@ void write_str(u_int8_t *dis, const char *str, int x, int y) {
         }
     }
 }
-

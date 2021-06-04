@@ -10,13 +10,14 @@
 #define GPIO_DOWN_INDEX 2
 
 #define ARROW_FALL_SPEED .5
+#define ARROW_POWER 10
 #define ARROW_MAX 256
 #define ARROW_LENGTH 5
 
-#define BOW_ANGLE_CHANGE_RATE .5
+#define BOW_ANGLE_CHANGE_RATE 3
 #define BOW_MAX_ANGLE 90
 #define BOW_MIN_ANGLE 0
-#define BOW_START_ANGLE 30
+#define BOW_START_ANGLE 15
 #define BOW_WIDTH 40
 #define BOW_HEIGHT 32
 #define BOW_POS_CENTER_OFFSET_X 12
@@ -25,7 +26,7 @@
 #define CHARACTER_WIDTH 24
 #define CHARACTER_HEIGHT 48
 
-#define PLAYER_INIT_POSX 10
+#define PLAYER_INIT_POSX 20
 #define PLAYER_INIT_POSY MAP_HEIGHT - CHARACTER_HEIGHT
 
 #define ENEMY_INIT_POSX 200
@@ -39,6 +40,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <math.h>
 
 #include "display.h"
 #include "gpio.h"
@@ -118,7 +120,7 @@ void drawover_stuff(uint8_t map[MAP_HEIGHT_PAGES][MAP_WIDTH],
                     struct point *pos);
 
 void draw_pixel(unsigned char *graphic, int x, int y, int width,
-                int height, bool pixel);
+                bool pixel);
 
 uint8_t *bow_rotational_graphic(struct bow *_bow);
 
@@ -143,4 +145,5 @@ void run_game(struct game *g);
 
 void aim_phase(struct game *g);
 
+void fire_phase(struct game *g);
 #endif

@@ -32,8 +32,13 @@ void drawover_stuff(uint8_t map[MAP_HEIGHT_PAGES][MAP_WIDTH],
     }
 }
 
+bool access_by_idx(const unsigned char *graphic, int x, int y, int width) {
+    unsigned int mask = 1 << (y % 8);
+    return !!(graphic[(y / 8) * width + x] & mask);
+}
+
 void draw_pixel(unsigned char *graphic, int x, int y, int width,
-                int height, bool pixel) {
+                bool pixel) {
     unsigned int mask = 1 << (y % 8);
     if (pixel)
         graphic[(y / 8) * width + x] |= mask;
@@ -41,12 +46,6 @@ void draw_pixel(unsigned char *graphic, int x, int y, int width,
         mask = ~mask;
         graphic[(y / 8) * width + x] &= mask;
     }
-}
-
-bool access_by_idx(const unsigned char *graphic, int x, int y, int width,
-                   int height) {
-    unsigned int mask = 1 << (y % 8);
-    return !!(graphic[(y / 8) * width + x] & mask);
 }
 
 uint8_t *bow_rotational_graphic(struct bow *_bow) {
@@ -66,17 +65,17 @@ uint8_t *bow_rotational_graphic(struct bow *_bow) {
     uint8_t *bow_box;
     MALLOC(bow_box, (2 * _bow->max_radius) * (2 * _bow->max_radius) * sizeof(uint8_t));
 
-    struct point center = {.x = BOW_POS_CENTER_OFFSET_X, .y = BOW_POS_CENTER_OFFSET_Y};
+    struct point center = {.x = BOW_POS_CENTER_OFFSET_X + 2, .y = BOW_POS_CENTER_OFFSET_Y};
 
     for (int y = 0; y < BOW_HEIGHT; y++) {
         for (int x = 0; x < BOW_WIDTH; x++) {
-            if (access_by_idx(bow_graphic, x, y, BOW_WIDTH, BOW_HEIGHT)) {
+            if (access_by_idx(bow_graphic, x, y, BOW_WIDTH)) {
                 struct point pos = {x, y};
                 struct point rotation = rotate(&pos, &center, angle);
                 rotation.x += center_moving_offset.x;
                 rotation.y += center_moving_offset.y;
 
-                draw_pixel(bow_box, rotation.x, rotation.y, 2 * max_radius, 2 * max_radius);
+                draw_pixel(bow_box, rotation.x, rotation.y, 2 * _bow->max_radius, 1);
             }
         }
     }
