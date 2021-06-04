@@ -9,11 +9,11 @@
 #define GPIO_UP_INDEX 1
 #define GPIO_DOWN_INDEX 2
 
-#define ARROW_FALL_SPEED .1
+#define ARROW_FALL_SPEED .5
 #define ARROW_MAX 256
 #define ARROW_LENGTH 5
 
-#define BOW_ANGLE_CHANGE_RATE 0.5
+#define BOW_ANGLE_CHANGE_RATE .5
 #define BOW_MAX_ANGLE 90
 #define BOW_MIN_ANGLE 0
 #define BOW_START_ANGLE 30
@@ -56,6 +56,8 @@ struct bow {
     double angle;
     struct point center_pos;
     struct point pos;
+    struct point draw_pos;
+    int max_radius;
     bool tense;
 };
 
@@ -115,6 +117,9 @@ void drawover_stuff(uint8_t map[MAP_HEIGHT_PAGES][MAP_WIDTH],
                     const unsigned char *graphic, int width, int height,
                     struct point *pos);
 
+void draw_pixel(unsigned char *graphic, int x, int y, int width,
+                int height, bool pixel);
+
 uint8_t *bow_rotational_graphic(struct bow *_bow);
 
 // game.c prto
@@ -126,8 +131,16 @@ void destroy_game(struct game *g);
 
 void draw_to_map(struct game *g);
 
-struct display_range cursor_to_range(struct point *cursor);
+void draw_player(struct game *g);
+
+struct box cursor_to_range(struct point *cursor);
 
 void display_map(struct game *g);
+
+void run_game(struct game *g);
+
+// phase.c proto
+
+void aim_phase(struct game *g);
 
 #endif

@@ -10,14 +10,14 @@ struct point rotate(struct point *pos, struct point *center, double angle) {
 
     struct point vec = {pos->x - center->x, pos->y - center->y};
 
-    struct point result;
+    
 
-    result.x =
-        rotate_transform[0][0] * vec.x + rotate_transform[0][1] * vec.y +
-        center->x;
-    result.y =
-        rotate_transform[1][0] * vec.x + rotate_transform[1][1] * vec.y +
-        center->y;
+    struct point result = {
+        .x = rotate_transform[0][0] * vec.x + rotate_transform[0][1] * vec.y +
+             center->x,
+        .y = rotate_transform[1][0] * vec.x + rotate_transform[1][1] * vec.y +
+             center->y
+    };
 
     return result;
 }

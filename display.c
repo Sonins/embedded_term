@@ -79,22 +79,34 @@ void update_full(int i2c_fd, u_int8_t* data) {
     ssd1306_data(i2c_fd, data, S_WIDTH * S_PAGES);
 }
 
-void update_range(int i2c_fd, u_int8_t* data, struct display_range range) {
+void update_range_map(int i2c_fd, uint8_t* data, struct box range, int data_width, struct point *display_cursor) {
     ssd1306_command(i2c_fd, 0x20);  // addressing mode
     ssd1306_command(i2c_fd, 0x0);   // horizontal addressing mode
 
     ssd1306_command(i2c_fd, 0x21);  // set column start/end address
-    ssd1306_command(i2c_fd, range.col[0]);
-    ssd1306_command(i2c_fd, range.col[1] - 1);
+    ssd1306_command(i2c_fd, range.col[0] - display_cursor->x);
+    ssd1306_command(i2c_fd, range.col[1] - display_cursor->x - 1);
 
     ssd1306_command(i2c_fd, 0x22);  // set page start/end address
-    ssd1306_command(i2c_fd, range.row[0] / 8);
-    ssd1306_command(i2c_fd, (int) ceil((double) range.row[1] / 8));
+    ssd1306_command(i2c_fd, (range.row[0] - display_cursor->y) / 8);
+    ssd1306_command(i2c_fd, (int) ceil((range.row[1] - display_cursor->y)  / 8));
 
     int width = range.col[1] - range.col[0];
     int height = (int) ceil((double) range.row[1] / 8) - (range.row[0] / 8);
 
-    ssd1306_data(i2c_fd, data, width * height);
+    uint8_t *update_data;
+    MALLOC(update_data, sizeof(uint8_t) (width * height));
+
+    for (int i = range.row[0]; i < range.row[1]; i++) {
+        for (int j = range.col[0]; j < range.col[1]; j++) {
+            int update_y = i - range.row[0];
+            int update_x = j - range.col[0];
+            update_data[update_y * width + update_x] = data[i * data_width + j];
+        }
+    }
+
+    ssd1306_data(i2c_fd, update_data, width * height);
+    free(update_data);
 }
 
 void ssd1306_destroy(int i2c_fd) {
