@@ -7,9 +7,10 @@ OBJECTS = game_main.o gpio.o display.o game.o arrow.o bow.o character.o draw.o u
 CFLAGS = -Wall
 
 all: $(TARGET)
+	rm *.o
 
 $(TARGET): $(OBJECTS)
-	$(CC) -o $(TARGET) $(OBJECTS) -lm
+	$(CC) -g -o $(TARGET) $(OBJECTS) -lm
 
 %.o: %.c
 	$(CC) -c $< $(CFLAGS)

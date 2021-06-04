@@ -20,12 +20,12 @@
 #define BOW_WIDTH 40
 #define BOW_HEIGHT 32
 #define BOW_POS_CENTER_OFFSET_X 12
-#define BOW_POS_CENTER_OFFSET_Y 15
+#define BOW_POS_CENTER_OFFSET_Y 12
 
 #define CHARACTER_WIDTH 24
 #define CHARACTER_HEIGHT 48
 
-#define PLAYER_INIT_POSX 5
+#define PLAYER_INIT_POSX 10
 #define PLAYER_INIT_POSY MAP_HEIGHT - CHARACTER_HEIGHT
 
 #define ENEMY_INIT_POSX 200
@@ -68,14 +68,14 @@ struct box {
 };
 
 struct character {
-// position will be x = body, y = OLED_HEIGHT(ground)
+// position will be upper left of character
     struct point pos;
     struct box head_box;
     struct box body_box;
 };
 
 struct game {
-    uint8_t entire_map[MAP_WIDTH][MAP_HEIGHT_PAGES];
+    uint8_t entire_map[MAP_HEIGHT_PAGES][MAP_WIDTH];
     struct character player;
     struct character enemy;
     struct bow player_bow;
@@ -107,15 +107,15 @@ struct point get_neck_pos(struct character *ch);
 void init_character(struct character *ch, int posx, int posy);
 
 // draw.c proto
-void draw_stuff(uint8_t map[MAP_WIDTH][MAP_HEIGHT_PAGES],
+void draw_stuff(uint8_t map[MAP_HEIGHT_PAGES][MAP_WIDTH],
                 const unsigned char *graphic, int width, int height,
                 struct point *pos);
 
-void drawover_stuff(uint8_t map[MAP_WIDTH][MAP_HEIGHT_PAGES],
+void drawover_stuff(uint8_t map[MAP_HEIGHT_PAGES][MAP_WIDTH],
                     const unsigned char *graphic, int width, int height,
                     struct point *pos);
 
-uint8_t *bow_rotational_graphic(double bow_angle, bool tense);
+uint8_t *bow_rotational_graphic(struct bow *_bow);
 
 // game.c prto
 void run_game(struct game *);
@@ -127,5 +127,7 @@ void destroy_game(struct game *g);
 void draw_to_map(struct game *g);
 
 struct display_range cursor_to_range(struct point *cursor);
+
+void display_map(struct game *g);
 
 #endif

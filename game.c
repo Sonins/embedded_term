@@ -18,6 +18,7 @@ struct game *initialze_game() {
 
     memset(g->entire_map, 0, sizeof(g->entire_map));
     draw_to_map(g);
+    display_map(g);
     return g;
 }
 
@@ -29,31 +30,35 @@ void destroy_game(struct game *g) {
 
 void draw_to_map(struct game *g) {
     draw_stuff(g->entire_map, character_graphic, CHARACTER_WIDTH,
-               CHARACTER_HEIGHT, &g->player.pos);
+               CHARACTER_HEIGHT / 8, &g->player.pos);
 
     draw_stuff(g->entire_map, character_graphic, CHARACTER_WIDTH,
-               CHARACTER_HEIGHT, &g->enemy.pos);
+               CHARACTER_HEIGHT / 8, &g->enemy.pos);
 
-    uint8_t *bow_rotation = bow_rotational_graphic(g->player_bow.angle, is_tense(&g->player_bow));
+    uint8_t *bow_rotation = bow_rotational_graphic(&g->player_bow);
     int max_radius =
         (BOW_WIDTH > BOW_HEIGHT ? BOW_WIDTH - BOW_POS_CENTER_OFFSET_X
                                 : BOW_HEIGHT - BOW_POS_CENTER_OFFSET_Y);
     
     struct point bow_draw_pos = {
-        .x = max_radius - g->player_bow.center_pos.x,
-        .y = max_radius - g->player_bow.center_pos.y
+        .x = g->player_bow.center_pos.x - max_radius,
+        .y = g->player_bow.center_pos.y - max_radius
     };
     
     drawover_stuff(g->entire_map, bow_rotation, 2 * max_radius,
-                   2*max_radius, &bow_draw_pos);
+                   (2 * max_radius) / 8, &bow_draw_pos);
 }
 
-void run_game(struct game *g) {
+void display_map(struct game *g) {
     uint8_t data[S_WIDTH * S_PAGES];
     for (int y = 0; y < S_PAGES; y++) {
         for (int x = 0; x < S_WIDTH; x++) {
-            data[y * S_WIDTH + x] = g->entire_map[y + 64][x];
+            data[y * S_WIDTH + x] = g->entire_map[y + (MAP_HEIGHT_PAGES - S_PAGES)][x];
         }
+    }
+
+    for (int i = 0; i < S_WIDTH; i++) {
+        data[S_WIDTH + i] = 1;
     }
     update_full(i2c_fd, data);
 }

@@ -9,7 +9,7 @@ void ssd1306_command(int i2c_fd, u_int8_t cmd) {
     buffer[1] = cmd;
 
     if (write(i2c_fd, buffer, 2) != 2) {
-        printf("i2c write failed!\n");
+        printf("i2c write failed! 0x%x\n", cmd);
     }
 }
 
@@ -98,7 +98,7 @@ void update_range(int i2c_fd, u_int8_t* data, struct display_range range) {
 }
 
 void ssd1306_destroy(int i2c_fd) {
-    ssd1306_command(i2c_fd, 0xAE); // oled off
+    //ssd1306_command(i2c_fd, 0xAE); // oled off
     close(i2c_fd);
 }
 
