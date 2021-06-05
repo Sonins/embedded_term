@@ -123,7 +123,7 @@ void update_range_map(int i2c_fd, uint8_t* data, struct display_range range,
 }
 
 void ssd1306_destroy(int i2c_fd) {
-    // ssd1306_command(i2c_fd, 0xAE); // oled off
+    ssd1306_command(i2c_fd, 0xAE); // oled off
     close(i2c_fd);
 }
 
@@ -133,7 +133,7 @@ int to_1dim(int x, int y) { return (y / 8) * S_WIDTH + x; }
 void write_str(u_int8_t* dis, const char* str, int x, int y) {
     for (int i = 0; i < strlen(str); i++) {
         for (int j = 0; j < FONT_WIDTH; j++) {
-            dis[to_1dim(x++, y * 8)] = font[str[i] - ' '][j];
+            dis[to_1dim(x++, y)] = font[str[i] - ' '][j];
             if (!(x < S_WIDTH)) return;
         }
     }

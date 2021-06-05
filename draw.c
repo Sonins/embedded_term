@@ -1,7 +1,6 @@
 #include "game.h"
 
-extern const unsigned char bow_release[];
-extern const unsigned char bow_tense[];
+#include "graphic.c"
 
 double to_map_y_axis(double y) { return MAP_HEIGHT - y; }
 
@@ -126,16 +125,51 @@ void draw_to_map(struct game *g) {
 
 void display_map(struct game *g, struct display_range *range) {
 
+    if (range->col[0] > MAP_WIDTH || range->col[1] > MAP_WIDTH ||
+        range->row[0] > MAP_HEIGHT || range->row[1] > MAP_HEIGHT)
+        return;
+    
     uint8_t data[S_WIDTH * S_PAGES];
+    memset(data, 0, sizeof(data));
     for (int y = range->row[0]; y < range->row[1]; y++) {
         for (int x = range->col[0]; x < range->col[1]; x++) {
-            data[(y - range->row[0]) * S_WIDTH + (x - range->col[0])] =
-                g->entire_map[y + (MAP_HEIGHT_PAGES - S_PAGES)][x];
+            if (access_by_idx((uint8_t *)g->entire_map, x, y, MAP_WIDTH))
+                draw_pixel(data, x - range->col[0], y - range->row[0], S_WIDTH, 1);
         }
     }
+
+    char str[10] = "score : ";
+    int size = strlen(str);
+    str[size] = g->score + '0';
+    write_str(data, str, S_WIDTH - strlen(str) * 8, 0);
+
     update_full(i2c_fd, data);
 }
 
 void draw_arrow(struct arrow *__arrow, uint8_t map[MAP_HEIGHT_PAGES][MAP_WIDTH]) {
+    if (__arrow->pos.x >= MAP_WIDTH || __arrow->pos.y >= MAP_HEIGHT)
+        return;
+
     draw_pixel((uint8_t *) map, __arrow->pos.x, __arrow->pos.y, MAP_WIDTH, 1);
+    double arrow_angle = atan(__arrow->power_y / __arrow->power_x);
+    for (int i = 0; i < ARROW_LENGTH * cos(arrow_angle); i++) {
+        draw_pixel((uint8_t *) map, __arrow->pos.x - i, __arrow->pos.y + i * sin(arrow_angle), MAP_WIDTH, 1);
+    }
+    draw_pixel((uint8_t *) map, __arrow->pos.x + 1,  __arrow->pos.y + sin(arrow_angle), MAP_WIDTH, 1);
+}
+
+void display_score(int score) {
+    
+    uint8_t data[S_WIDTH * S_PAGES];
+    memset(data, 0, sizeof(data));
+
+    char scorestr[10] = "score : ";
+    int size = strlen(scorestr);
+    scorestr[size] = score + '0';
+    write_str(data, scorestr, (S_WIDTH - strlen(scorestr) * 8) / 2, S_HEIGHT / 2);
+    
+    char continue_str[20] = "press any key";
+    write_str(data, "press any key", (S_WIDTH - strlen(continue_str) * 8) / 2, S_HEIGHT / 2 + 8);
+
+    update_full(i2c_fd, data);
 }

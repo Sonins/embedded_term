@@ -28,11 +28,11 @@ bool arrow_expired(struct arrow *_arrow) {
 }
 
 int arrow_enemy_colide(struct arrow *_arrow, struct character *enemy) {
-    if (box_colide(&_arrow->pos, &enemy->body_box))
-        return 1;
-    
     if (box_colide(&_arrow->pos, &enemy->head_box))
         return 3;
+    
+    if (box_colide(&_arrow->pos, &enemy->body_box))
+        return 1;
     
     return 0;
 }

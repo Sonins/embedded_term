@@ -51,4 +51,6 @@ void update_range_map(int i2c_fd, uint8_t* data, struct display_range range,
 
 struct display_range point_to_range(struct point display_cursor);
 
+void write_str(u_int8_t* dis, const char* str, int x, int y);
+
 #endif

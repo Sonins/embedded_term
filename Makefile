@@ -3,7 +3,7 @@ CROSS_COMPILE=$(BUILDROOT_OUTPUT)/host/bin/arm-linux-
 
 CC = $(CROSS_COMPILE)gcc
 TARGET = arrow_game
-OBJECTS = game_main.o gpio.o display.o game.o arrow.o bow.o character.o draw.o util.o
+OBJECTS = game_main.o gpio.o display.o game.o arrow.o bow.o character.o draw.o util.o phase.o
 CFLAGS = -Wall
 
 all: $(TARGET)
@@ -21,7 +21,7 @@ game_main.o : game_main.c game.o
 draw.o: draw.c graphic.o
 	$(CC) -c draw.c $(CFLAGS)
 
-game.o: game.c arrow.o bow.o character.o draw.o
+game.o: game.c arrow.o bow.o character.o draw.o phase.o
 	$(CC) -c game.c $(CFLAGS)
 
 display.o: display.c display.h 

@@ -1,7 +1,7 @@
 #ifndef ARROW_GAME_H
 #define ARROW_GAME_H
 
-#define MAP_WIDTH 256
+#define MAP_WIDTH 374
 #define MAP_HEIGHT 128
 #define MAP_HEIGHT_PAGES (MAP_HEIGHT / 8)
 
@@ -9,11 +9,11 @@
 #define GPIO_UP_INDEX 1
 #define GPIO_DOWN_INDEX 2
 
-#define ARROW_FALL_SPEED .2
-#define ARROW_POWER 10
+#define ARROW_FALL_SPEED .3
+#define ARROW_POWER 5
 #define ARROW_MAX 256
 #define ARROW_LENGTH 5
-#define ARROW_AMOUNT 3
+#define ARROW_AMOUNT 5
 
 #define BOW_ANGLE_CHANGE_RATE 3
 #define BOW_MAX_ANGLE 90
@@ -22,16 +22,17 @@
 #define BOW_WIDTH 40
 #define BOW_HEIGHT 32
 #define BOW_POS_CENTER_OFFSET_X 12
-#define BOW_POS_CENTER_OFFSET_Y 12
+#define BOW_POS_CENTER_OFFSET_Y 15
 
 #define CHARACTER_WIDTH 24
 #define CHARACTER_HEIGHT 48
 
+// character pos is upper left of character.
 #define PLAYER_INIT_POSX 20
-#define PLAYER_INIT_POSY to_map_y_axis(CHARACTER_HEIGHT)
+#define PLAYER_INIT_POSY MAP_HEIGHT - CHARACTER_HEIGHT
 
-#define ENEMY_INIT_POSX 200
-#define ENEMY_INIT_POSY to_map_y_axis(CHARACTER_HEIGHT)
+#define ENEMY_INIT_POSX 300
+#define ENEMY_INIT_POSY MAP_HEIGHT - CHARACTER_HEIGHT
 
 #define TO_DISPLAY_Y(y) \
     MAP_HEIGHT - y
@@ -85,7 +86,6 @@ struct game {
     struct character player;
     struct character enemy;
     struct bow player_bow;
-    struct point display_cursor;
     int score;
 };
 
@@ -138,6 +138,10 @@ void draw_to_map(struct game *g);
 
 void display_map(struct game *g, struct display_range *range);
 
+void draw_arrow(struct arrow *__arrow, uint8_t map[MAP_HEIGHT_PAGES][MAP_WIDTH]);
+
+void display_score(int score);
+
 // game.c prto
 void run_game(struct game *);
 
@@ -156,4 +160,6 @@ struct display_range cursor_to_range(struct point *cursor);
 void aim_phase(struct game *g);
 
 void fire_phase(struct game *g);
+
+void score_display_phase(int score);
 #endif

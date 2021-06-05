@@ -1,13 +1,10 @@
 #include "game.h"
 
-void aim_phase(struct game *g) {
-    struct display_range range = {
-        .col[0] = 0,
-        .col[1] = S_WIDTH,
-        .row[0] = MAP_HEIGHT - S_HEIGHT,
-        .row[1] = MAP_HEIGHT};
+extern struct display_range player_screen;
 
+void aim_phase(struct game *g) {
     uint32_t param_value[3];
+    g->player_bow.tense = true;
     do {
         get_gpio_input(gpio_fd, param_value);
         if (param_value[GPIO_UP_INDEX]) {
@@ -19,12 +16,12 @@ void aim_phase(struct game *g) {
         }
 
         draw_player(g);
-        display_map(g, &range);
+        display_map(g, &player_screen);
     } while (!param_value[GPIO_FIRE_INDEX]);
 
     g->player_bow.tense = false;
     draw_player(g);
-    display_map(g);
+    display_map(g, &player_screen);
 }
 
 void fire_phase(struct game *g) {
@@ -36,10 +33,21 @@ void fire_phase(struct game *g) {
            !arrow_expired(&_arrow)) {
         
         arrow_fly(&_arrow);
+        draw_arrow(&_arrow, g->entire_map);
         range = cursor_to_range(&_arrow.pos);
         display_map(g, &range);
     }
+
     g->score += score_earned;
-    printf("%d\n", g->score);
+    display_map(g, &range);
     sleep(1);
+}
+
+void score_display_phase(int score) {
+    display_score(score);
+
+    uint32_t param_value[3];
+    do {
+        get_gpio_input(gpio_fd, param_value);
+    } while (!param_value[GPIO_FIRE_INDEX] && !param_value[GPIO_DOWN_INDEX] && !param_value[GPIO_UP_INDEX]);
 }

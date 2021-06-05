@@ -1,6 +1,11 @@
 #include "game.h"
 
-#include "graphic.c"
+struct display_range player_screen = {
+    .col[0] = 0,
+    .col[1] = S_WIDTH,
+    .row[0] = MAP_HEIGHT - S_HEIGHT,
+    .row[1] = MAP_HEIGHT
+};
 
 struct game *initialze_game() {
     i2c_fd = ssd1306_init();
@@ -13,14 +18,12 @@ struct game *initialze_game() {
     init_character(&g->enemy, ENEMY_INIT_POSX, ENEMY_INIT_POSY);
     init_bow(&g->player_bow, get_neck_pos(&g->player));
 
-    g->display_cursor.x = 0;
-    g->display_cursor.y = MAP_HEIGHT;
     g->score = 0;
 
     memset(g->entire_map, 0, sizeof(g->entire_map));
     draw_to_map(g);
-    struct display_range map_range = point_to_range()
-    display_map(g, po);
+    display_map(g, &player_screen);
+    
     return g;
 }
 
@@ -40,6 +43,7 @@ void run_game(struct game *g) {
         aim_phase(g);
         fire_phase(g);
     }
+    score_display_phase(g->score);
 }
 
 
