@@ -49,4 +49,6 @@ void ssd1306_destroy(int i2c_fd);
 void update_range_map(int i2c_fd, uint8_t* data, struct display_range range,
                       int data_width, struct point* display_cursor);
 
+struct display_range point_to_range(struct point display_cursor);
+
 #endif

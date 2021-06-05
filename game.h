@@ -9,10 +9,11 @@
 #define GPIO_UP_INDEX 1
 #define GPIO_DOWN_INDEX 2
 
-#define ARROW_FALL_SPEED .5
+#define ARROW_FALL_SPEED .2
 #define ARROW_POWER 10
 #define ARROW_MAX 256
 #define ARROW_LENGTH 5
+#define ARROW_AMOUNT 3
 
 #define BOW_ANGLE_CHANGE_RATE 3
 #define BOW_MAX_ANGLE 90
@@ -27,10 +28,10 @@
 #define CHARACTER_HEIGHT 48
 
 #define PLAYER_INIT_POSX 20
-#define PLAYER_INIT_POSY MAP_HEIGHT - CHARACTER_HEIGHT
+#define PLAYER_INIT_POSY to_map_y_axis(CHARACTER_HEIGHT)
 
 #define ENEMY_INIT_POSX 200
-#define ENEMY_INIT_POSY MAP_HEIGHT - CHARACTER_HEIGHT
+#define ENEMY_INIT_POSY to_map_y_axis(CHARACTER_HEIGHT)
 
 #define TO_DISPLAY_Y(y) \
     MAP_HEIGHT - y
@@ -41,6 +42,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <math.h>
+#include <unistd.h>
 
 #include "display.h"
 #include "gpio.h"
@@ -92,7 +94,13 @@ int i2c_fd;
 int gpio_fd;
 
 // arrow.c proto
-void arrow_precede(struct arrow *__arrow);
+void arrow_fly(struct arrow *__arrow);
+
+void init_arrow(struct arrow *_arrow, struct bow *_bow);
+
+bool arrow_expired(struct arrow *_arrow);
+
+int arrow_enemy_colide(struct arrow *_arrow, struct character *enemy);
 
 // bow.c proto
 void rotate_bow_up(struct bow *b);
@@ -124,6 +132,12 @@ void draw_pixel(unsigned char *graphic, int x, int y, int width,
 
 uint8_t *bow_rotational_graphic(struct bow *_bow);
 
+void draw_player(struct game *g);
+
+void draw_to_map(struct game *g);
+
+void display_map(struct game *g, struct display_range *range);
+
 // game.c prto
 void run_game(struct game *);
 
@@ -131,15 +145,11 @@ struct game *initialze_game();
 
 void destroy_game(struct game *g);
 
-void draw_to_map(struct game *g);
-
-void draw_player(struct game *g);
-
-struct box cursor_to_range(struct point *cursor);
-
-void display_map(struct game *g);
-
 void run_game(struct game *g);
+
+bool box_colide(struct point *pt, struct box *b);
+
+struct display_range cursor_to_range(struct point *cursor);
 
 // phase.c proto
 

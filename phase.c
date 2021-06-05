@@ -1,17 +1,12 @@
 #include "game.h"
 
 void aim_phase(struct game *g) {
-    
     struct display_range range = {
-        .col[0] = g->player_bow.center_pos.x - g->player_bow.max_radius,
-        .col[1] = g->player_bow.center_pos.x + g->player_bow.max_radius,
-        .row[0] = 0,
-        .row[1] = g->player_bow.center_pos.y - g->player_bow.max_radius
-    };
+        .col[0] = 0,
+        .col[1] = S_WIDTH,
+        .row[0] = MAP_HEIGHT - S_HEIGHT,
+        .row[1] = MAP_HEIGHT};
 
-    int width = range.col[1] - range.col[0];
-
-    struct point display_pos = {.x = 0, .y = MAP_HEIGHT - S_HEIGHT};
     uint32_t param_value[3];
     do {
         get_gpio_input(gpio_fd, param_value);
@@ -24,7 +19,7 @@ void aim_phase(struct game *g) {
         }
 
         draw_player(g);
-        display_map(g);
+        display_map(g, &range);
     } while (!param_value[GPIO_FIRE_INDEX]);
 
     g->player_bow.tense = false;
@@ -33,5 +28,18 @@ void aim_phase(struct game *g) {
 }
 
 void fire_phase(struct game *g) {
-    
+    struct arrow _arrow;
+    init_arrow(&_arrow, &g->player_bow);
+    int score_earned = 0;
+    struct display_range range;
+    while (!(score_earned = arrow_enemy_colide(&_arrow, &g->enemy)) &&
+           !arrow_expired(&_arrow)) {
+        
+        arrow_fly(&_arrow);
+        range = cursor_to_range(&_arrow.pos);
+        display_map(g, &range);
+    }
+    g->score += score_earned;
+    printf("%d\n", g->score);
+    sleep(1);
 }
