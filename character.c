@@ -23,8 +23,8 @@ void init_character(struct character *_character, int posx, int posy) {
     _character->body_box.upper_y = MAP_HEIGHT;
 
 
-    _character->head_box.lower_x = _character->pos.x - 6;
-    _character->head_box.lower_y = MAP_HEIGHT - CHARACTER_HEIGHT + 5;
-    _character->head_box.upper_x = _character->pos.x + 6;
-    _character->head_box.upper_y = (int) neck_pos.y - 1;
+    _character->head_box.lower_x = _character->pos.x - 8;
+    _character->head_box.lower_y = MAP_HEIGHT - CHARACTER_HEIGHT - 5;
+    _character->head_box.upper_x = _character->pos.x + 8;
+    _character->head_box.upper_y = (int) neck_pos.y - 2;
 }

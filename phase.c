@@ -31,11 +31,18 @@ void fire_phase(struct game *g) {
     struct display_range range;
     while (!(score_earned = arrow_enemy_colide(&_arrow, &g->enemy)) &&
            !arrow_expired(&_arrow)) {
-        
         arrow_fly(&_arrow);
         draw_arrow(&_arrow, g->entire_map);
         range = cursor_to_range(&_arrow.pos);
         display_map(g, &range);
+    }
+
+    if (score_earned) {
+        // make arrow fly little more!
+        for (int i = 0; i < 2; i++) {
+            arrow_fly(&_arrow);
+            draw_arrow(&_arrow, g->entire_map);
+        }
     }
 
     g->score += score_earned;
@@ -49,5 +56,6 @@ void score_display_phase(int score) {
     uint32_t param_value[3];
     do {
         get_gpio_input(gpio_fd, param_value);
-    } while (!param_value[GPIO_FIRE_INDEX] && !param_value[GPIO_DOWN_INDEX] && !param_value[GPIO_UP_INDEX]);
+    } while (!param_value[GPIO_FIRE_INDEX] && !param_value[GPIO_DOWN_INDEX] &&
+             !param_value[GPIO_UP_INDEX]);
 }

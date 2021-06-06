@@ -13,9 +13,10 @@ struct game *initialze_game() {
 
     struct game *g;
     MALLOC(g, sizeof(struct game));
-
+    srand(42);
     init_character(&g->player, PLAYER_INIT_POSX, PLAYER_INIT_POSY);
-    init_character(&g->enemy, ENEMY_INIT_POSX, ENEMY_INIT_POSY);
+    int enemy_init_posx = ENEMY_INIT_POSX - (rand() % 100);
+    init_character(&g->enemy, enemy_init_posx, ENEMY_INIT_POSY);
     init_bow(&g->player_bow, get_neck_pos(&g->player));
 
     g->score = 0;

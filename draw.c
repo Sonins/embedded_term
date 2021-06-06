@@ -138,16 +138,15 @@ void display_map(struct game *g, struct display_range *range) {
         }
     }
 
-    char str[10] = "score : ";
-    int size = strlen(str);
-    str[size] = g->score + '0';
+    char str[20];
+    sprintf(str, "score : %d", g->score);
     write_str(data, str, S_WIDTH - strlen(str) * 8, 0);
 
     update_full(i2c_fd, data);
 }
 
 void draw_arrow(struct arrow *__arrow, uint8_t map[MAP_HEIGHT_PAGES][MAP_WIDTH]) {
-    if (__arrow->pos.x >= MAP_WIDTH || __arrow->pos.y >= MAP_HEIGHT)
+    if (__arrow->pos.x >= MAP_WIDTH || __arrow->pos.y < 0)
         return;
 
     draw_pixel((uint8_t *) map, __arrow->pos.x, __arrow->pos.y, MAP_WIDTH, 1);
@@ -163,9 +162,8 @@ void display_score(int score) {
     uint8_t data[S_WIDTH * S_PAGES];
     memset(data, 0, sizeof(data));
 
-    char scorestr[10] = "score : ";
-    int size = strlen(scorestr);
-    scorestr[size] = score + '0';
+    char scorestr[20];
+    sprintf(scorestr, "score : %d", score);
     write_str(data, scorestr, (S_WIDTH - strlen(scorestr) * 8) / 2, S_HEIGHT / 2);
     
     char continue_str[20] = "press any key";
