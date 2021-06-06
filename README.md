@@ -11,10 +11,10 @@ This game is archery game based on flash.
 
 # How to compile
 ## Hardware Setting
----
+
 TODO
 ## Driver Compilation & Usage
----
+
 ```
 cd driver
 make
@@ -26,7 +26,7 @@ insmod gpio-driver.ko
 ```
 This will install gpio driver.
 ## Main Game Compilation
----
+
 Simply, in code root folder,
 ```
 make
